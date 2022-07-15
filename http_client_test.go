@@ -7,6 +7,12 @@ import (
 )
 
 func TestNew(t *testing.T) {
-	response, err := New("").Get(context.Background())
-	fmt.Println(response, err)
+	response, err := New("https://www.baidu.com").Get(context.Background())
+	if err != nil {
+		t.Fatal(err)
+	}
+	fmt.Println(response.Code())
+	fmt.Println(response.Curl())
+	fmt.Println(response.UseTime())
+	fmt.Println(string(response.GetBody()))
 }

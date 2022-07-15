@@ -5,13 +5,17 @@ import (
 	"net/http"
 )
 
+// muteHttpResponse 响应
+// response http.Response
+// client mute http 客户端
+// body 响应体
 type muteHttpResponse struct {
 	response *http.Response
 	client   muteHttpClient
 	body     []byte
-	url      string
 }
 
+// Code http code
 func (r *muteHttpResponse) Code() int {
 	if r.response == nil {
 		return 0
@@ -19,10 +23,12 @@ func (r *muteHttpResponse) Code() int {
 	return r.response.StatusCode
 }
 
+// GetBody body
 func (r *muteHttpResponse) GetBody() []byte {
 	return r.body
 }
 
+// Curl curl cmd string
 func (r *muteHttpResponse) Curl() string {
 	if r.client.request == nil {
 		return ""
@@ -30,10 +36,12 @@ func (r *muteHttpResponse) Curl() string {
 	return buildCurl(r.client.url, r.client.method, string(r.client.body), r.client.request.Header, r.client.request.Cookies())
 }
 
+// UseTime 请求耗时
 func (r *muteHttpResponse) UseTime() int64 {
 	return r.client.useTime
 }
 
+// Unmarshal JSON反序列号
 func (r *muteHttpResponse) Unmarshal(resp interface{}) error {
 	return json.Unmarshal(r.body, resp)
 }

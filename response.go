@@ -41,7 +41,7 @@ func (r *muteHttpResponse) UseTime() int64 {
 	return r.client.useTime
 }
 
-// Unmarshal JSON反序列号
+// Unmarshal JSON反序列化
 func (r *muteHttpResponse) Unmarshal(resp interface{}) error {
 	return json.Unmarshal(r.body, resp)
 }

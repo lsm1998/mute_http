@@ -15,10 +15,10 @@ import (
 )
 
 var (
-	// codeMustErr code不匹配错误
+	// codeMustErr code must error
 	codeMustErr = errors.New("HTTP code mismatch")
 
-	// defaultClient 默认http client
+	// defaultClient default http client
 	defaultClient = &http.Client{
 		Transport: &http.Transport{
 			DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
@@ -58,9 +58,9 @@ func NewWithClient(url string, client *http.Client) *muteHttpClient {
 
 // NewWithTransport create muteHttpClient with you http transport
 func NewWithTransport(url string, transport *http.Transport) *muteHttpClient {
-	client := *defaultClient
+	client := defaultClient
 	client.Transport = transport
-	return NewWithClient(url, &client)
+	return NewWithClient(url, client)
 }
 
 // New create muteHttpClient with default
@@ -68,7 +68,7 @@ func New(url string) *muteHttpClient {
 	return NewWithClient(url, defaultClient)
 }
 
-// SetBodyJSON 设置JSON请求体
+// SetBodyJSON set json body
 func (c *muteHttpClient) SetBodyJSON(obj interface{}) *muteHttpClient {
 	c.body, _ = json.Marshal(obj)
 	c.request.Header["Content-Type"] = []string{"application/json"}
@@ -76,7 +76,7 @@ func (c *muteHttpClient) SetBodyJSON(obj interface{}) *muteHttpClient {
 	return c
 }
 
-// AddCookie 添加Cookie
+// AddCookie add Cookie
 func (c *muteHttpClient) AddCookie(cookies ...*http.Cookie) *muteHttpClient {
 	for _, cookie := range cookies {
 		c.request.AddCookie(cookie)
@@ -84,7 +84,7 @@ func (c *muteHttpClient) AddCookie(cookies ...*http.Cookie) *muteHttpClient {
 	return c
 }
 
-// AddHeader 追加的方式写入一组http header
+// AddHeader append http header
 func (c *muteHttpClient) AddHeader(key, value string) *muteHttpClient {
 	if _, ok := c.request.Header[key]; ok {
 		c.request.Header[key] = append(c.request.Header[key], value)
@@ -94,13 +94,13 @@ func (c *muteHttpClient) AddHeader(key, value string) *muteHttpClient {
 	return c
 }
 
-// SetHeader 覆盖的方式写入一组http header
+// SetHeader set http header
 func (c *muteHttpClient) SetHeader(key, value string) *muteHttpClient {
 	c.request.Header[key] = []string{value}
 	return c
 }
 
-// SetQuery 设置请求query参数
+// SetQuery set query param
 func (c *muteHttpClient) SetQuery(key, value string) *muteHttpClient {
 	c.request.URL, _ = url.Parse(c.url)
 	values, _ := url.ParseQuery(c.request.URL.RawQuery)
@@ -116,7 +116,7 @@ func (c *muteHttpClient) SetQuery(key, value string) *muteHttpClient {
 	return c
 }
 
-// Header 覆盖的方式设置http header
+// Header append http header
 func (c *muteHttpClient) Header(header http.Header) *muteHttpClient {
 	if len(header) == 0 {
 		c.request.Header = make(http.Header)
@@ -126,12 +126,27 @@ func (c *muteHttpClient) Header(header http.Header) *muteHttpClient {
 	return c
 }
 
-// SetPostForm 设置表单数据
+// SetPostForm set post form
 func (c *muteHttpClient) SetPostForm(value url.Values) *muteHttpClient {
 	c.request.Header["Content-Type"] = []string{"application/x-www-form-urlencoded"}
 	c.request.PostForm = value
 	c.body = []byte(value.Encode())
 	return c
+}
+
+// SetCookieJar set CookieJar
+func (c *muteHttpClient) SetCookieJar(cookieJar http.CookieJar) *muteHttpClient {
+	if c.client == defaultClient {
+		c.dumpDefaultClient()
+	}
+	c.client.Jar = cookieJar
+	return c
+}
+
+// dumpDefaultClient dump with default client
+func (c *muteHttpClient) dumpDefaultClient() {
+	client := *defaultClient
+	c.client = &client
 }
 
 // MustCode set mustCode

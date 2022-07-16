@@ -28,12 +28,22 @@ func (r *muteHttpResponse) GetBody() []byte {
 	return r.body
 }
 
+// Cookies response Cookies
+func (r *muteHttpResponse) Cookies() []*http.Cookie {
+	return r.response.Cookies()
+}
+
+// Request http request
+func (r *muteHttpResponse) Request() *http.Request {
+	return r.client.request
+}
+
 // Curl curl cmd string
 func (r *muteHttpResponse) Curl() string {
 	if r.client.request == nil {
 		return ""
 	}
-	return buildCurl(r.client.url, r.client.method, string(r.client.body), r.client.request.Header, r.client.request.Cookies())
+	return buildCurl(r.client.url, r.client.method, string(r.client.body), r.client.request.Header)
 }
 
 // UseTime 请求耗时

@@ -10,8 +10,8 @@ const (
 	curlSuffix = ` -w '\n\ntime_connect %{time_connect}\ntime_starttransfer %{time_starttransfer}\ntime_total %{time_total}\n'`
 )
 
-// buildCurl 生成 curl cmd
-func buildCurl(uri string, method string, data string, header http.Header, cookies []*http.Cookie) string {
+// buildCurl build curl cmd
+func buildCurl(uri string, method string, data string, header http.Header) string {
 	c := fmt.Sprintf("curl  -X %s '%s'", method, uri)
 	if header != nil {
 		for k, v := range header {
@@ -20,13 +20,13 @@ func buildCurl(uri string, method string, data string, header http.Header, cooki
 			}
 		}
 	}
-	if cookies != nil && len(cookies) > 0 {
-		c += " -H 'Cookie: "
-		for _, v := range cookies {
-			c += fmt.Sprintf("%s=%s;", v.Name, v.Value)
-		}
-		c += "'"
-	}
+	//if cookies != nil && len(cookies) > 0 {
+	//	c += " -H 'Cookie: "
+	//	for _, v := range cookies {
+	//		c += fmt.Sprintf("%s=%s;", v.Name, v.Value)
+	//	}
+	//	c += "'"
+	//}
 	if data != "" {
 		c += fmt.Sprintf(" -d '%s'", data)
 	}
